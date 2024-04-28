@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 public class Contact {
 
     @Id
+    @Column(name = "contact_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer contactId;
 
@@ -27,8 +28,9 @@ public class Contact {
     @Column(name = "contact_info")
     private String contactInfo;
 
+
     public Integer getContactId() {
-        return contactId;
+        return this.contactId;
     }
 
     public void setContactId(Integer contactId) {
@@ -36,7 +38,7 @@ public class Contact {
     }
 
     public Person getPerson() {
-        return person;
+        return this.person;
     }
 
     public void setPerson(Person person) {
@@ -44,7 +46,7 @@ public class Contact {
     }
 
     public String getContactType() {
-        return contactType;
+        return this.contactType;
     }
 
     public void setContactType(String contactType) {
@@ -52,7 +54,7 @@ public class Contact {
     }
 
     public String getContactInfo() {
-        return contactInfo;
+        return this.contactInfo;
     }
 
     public void setContactInfo(String contactInfo) {

@@ -12,11 +12,13 @@ import jakarta.persistence.GenerationType;
 public class Person {
 
   @Id
+  @Column(name = "person_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer personId;
 
   @Column(name = "person_name")
   private String personName;
+
 
   public Integer getPersonId() {
     return this.personId;

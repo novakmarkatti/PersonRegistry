@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 public class Address {
 
     @Id
+    @Column(name = "address_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer addressId;
 
@@ -28,23 +29,12 @@ public class Address {
     @Column(name = "address_type")
     private AddressType addressType;
 
-    @Column(name = "country")
-    private String country;
+    @Column(name = "address_info")
+    private String addressInfo;
 
-    @Column(name = "state")
-    private String state;
-
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "street")
-    private String street;
-
-    @Column(name = "zip_code")
-    private String zipCode;
 
     public Integer getAddressId() {
-        return addressId;
+        return this.addressId;
     }
 
     public void setAddressId(Integer addressId) {
@@ -52,7 +42,7 @@ public class Address {
     }
 
     public Person getPerson() {
-        return person;
+        return this.person;
     }
 
     public void setPerson(Person person) {
@@ -60,50 +50,18 @@ public class Address {
     }
 
     public AddressType getAddressType() {
-        return addressType;
+        return this.addressType;
     }
 
     public void setAddressType(AddressType addressType) {
         this.addressType = addressType;
     }
 
-    public String getCountry() {
-        return country;
+    public String getAddressInfo() {
+        return this.addressInfo;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public void setAddressInfo(String addressInfo) {
+        this.addressInfo = addressInfo;
     }
 }
