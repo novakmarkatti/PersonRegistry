@@ -12,9 +12,9 @@ import com.personregistry.entities.Address;
 import com.personregistry.entities.Contact;
 import com.personregistry.entities.Person;
 import com.personregistry.enums.AddressType;
-import com.personregistry.repositories.AddressRepository;
 import com.personregistry.repositories.ContactRepository;
 import com.personregistry.repositories.PersonRepository;
+import com.personregistry.service.AddressService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
@@ -29,20 +29,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/personregistry")
 public class PersonRegistryController {
 
-    private final AddressRepository addressRepository;
+    private final AddressService addressService;
     private final ContactRepository contactRepository;
     private final PersonRepository personRepository;
 
-    public PersonRegistryController(final AddressRepository addressRepository, final ContactRepository contactRepository, final PersonRepository personRepository) {
-        this.addressRepository = addressRepository;
+    public PersonRegistryController(final AddressService addressService, final ContactRepository contactRepository, final PersonRepository personRepository) {
+        this.addressService = addressService;
         this.contactRepository = contactRepository;
         this.personRepository = personRepository;
       }
 
-	@GetMapping("/addresses")
-	public Iterable<Address> getAddresses() {
-		return this.addressRepository.findAll();
-	}
+    @GetMapping("/addresses")
+    public Iterable<Address> getAddresses() {
+        return addressService.getAddresses();
+    }
 
     @GetMapping("/addresstypes")
 	public List<AddressType> getAddressTypes() {
@@ -72,22 +72,25 @@ public class PersonRegistryController {
 			personList.add(personOptional.get());
 			return personList;
 		} else if (personName != null) {
-			return this.personRepository.findByPersonName(personName);
+			return null; // this.personRepository.findByPersonName(personName);
 		}
 		return personList;
 	}
 
 	@PostMapping("/persons")
-	public ResponseEntity<Person> addPersonWithContacts(@RequestBody PersonDTO personDTO) {
-		List<Person> existingPersons = personRepository.findByPersonName(personDTO.getPersonName());
+	public ResponseEntity<Person> addPerson(@RequestBody PersonDTO personDTO) {
+		Person existingPerson = personRepository.findByPersonName(personDTO.getPersonName());
 		Person savedPerson;
-		if (!existingPersons.isEmpty()) {
-			savedPerson = existingPersons.get(0);
+		if (existingPerson != null) {
+			savedPerson = existingPerson;
 		} else {
 			Person person = new Person();
 			person.setPersonName(personDTO.getPersonName());
+			person.setAddresses(null);
 			savedPerson = personRepository.save(person);
 		}
+
+        savedPerson.setAddresses(addressService.setAddresses(savedPerson, personDTO));
 
 		List<Contact> contacts = new ArrayList<>();
 		for (ContactDTO contactDTO : personDTO.getContacts()) {
@@ -98,8 +101,8 @@ public class PersonRegistryController {
 			contactRepository.save(contact);
 			contacts.add(contact);
 		}
-
 		savedPerson.setContacts(contacts);
+
 		return ResponseEntity.ok().body(personRepository.save(savedPerson));
 	}
 

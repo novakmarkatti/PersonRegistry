@@ -7,7 +7,7 @@ const handle500Error = (json) => {
 }
 
 const renderError = (message) => {
-  alert(`Error calling Boots API: ${message}`);
+  alert(`Error: ${message}`);
 }
 
 const fetchPersons = (cb) => {
@@ -82,11 +82,17 @@ const renderPersonsListCallback = (personsCardContainer) => (persons) => {
 const addPerson = () => {
   const addPersonForm = document.getElementById("addPersonForm").elements;
   const personName = addPersonForm["personName"].value;
+  const addressType = addPersonForm["addressType"].value;
+  const addressInfo = addPersonForm["addressInfo"].value;
   const contactType = addPersonForm["contactType"].value;
   const contactInfo = addPersonForm["contactInfo"].value;
   
   const person = { 
     personName,
+    addresses: [{
+      addressType,
+      addressInfo
+    }],
     contacts: [{
       contactType,
       contactInfo
@@ -180,4 +186,27 @@ const listPersons = () => {
   fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer')));
 }
 
+const fetchAddressTypes = async () => {
+  try {
+    const response = await fetch('/personregistry/addresstypes');
+    const addressTypes = await response.json();
+    return addressTypes;
+  } catch (error) {
+    renderError('Error fetching address types');
+    return [];
+  }
+};
+
+const populateAddressTypes = async () => {
+  const addressTypeSelect = document.getElementById('addressType');
+  const addressTypes = await fetchAddressTypes();
+  addressTypes.forEach((addressType) => {
+    const option = document.createElement('option');
+    option.text = addressType;
+    option.value = addressType;
+    addressTypeSelect.appendChild(option);
+  });
+};
+
+window.addEventListener('DOMContentLoaded', populateAddressTypes);
 listPersons();
