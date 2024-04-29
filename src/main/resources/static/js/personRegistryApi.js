@@ -113,6 +113,8 @@ const updatePerson = () => {
   const updatePersonForm = document.getElementById("updatePersonForm").elements;
   const personId = updatePersonForm["personId"].value;
   const personName = updatePersonForm["personName"].value;
+  const addressType = updatePersonForm["addressType"].value;
+  const addressInfo = updatePersonForm["addressInfo"].value;
   const contactId = updatePersonForm["contactId"].value;
   const contactType = updatePersonForm["contactType"].value;
   const contactInfo = updatePersonForm["contactInfo"].value;
@@ -120,6 +122,10 @@ const updatePerson = () => {
   const person = {
     personId,
     personName,
+    addresses: [{
+      addressType,
+      addressInfo
+    }],
     contacts: [{
       contactId,
       contactType,
@@ -136,6 +142,7 @@ const updatePerson = () => {
   .then(() => fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer'))))
   .catch(renderError);
 }
+
 
 const deletePerson = () => {
   const deletePersonForm = document.getElementById("deletePersonForm").elements;
@@ -198,13 +205,20 @@ const fetchAddressTypes = async () => {
 };
 
 const populateAddressTypes = async () => {
-  const addressTypeSelect = document.getElementById('addressType');
+  const addressTypeSelects = document.querySelectorAll('.addressType');
   const addressTypes = await fetchAddressTypes();
-  addressTypes.forEach((addressType) => {
-    const option = document.createElement('option');
-    option.text = addressType;
-    option.value = addressType;
-    addressTypeSelect.appendChild(option);
+
+  addressTypeSelects.forEach((select) => {
+    select.innerHTML = '';
+    addressTypes.forEach((addressType) => {
+      const option = document.createElement('option');
+      option.text = addressType;
+      option.value = addressType;
+      if (addressType === 'EMPTY') {
+        option.setAttribute('selected', 'selected');
+      }
+      select.appendChild(option);
+    });
   });
 };
 

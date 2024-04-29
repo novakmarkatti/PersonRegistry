@@ -93,23 +93,21 @@ public class PersonRegistryController {
         return ResponseEntity.ok().body(personRepository.save(savedPerson));
     }
 
-	@PutMapping("/persons/{id}")
-	public ResponseEntity<Person> updatePerson(@PathVariable("id") Integer id, @RequestBody PersonDTO updatedPersonDTO) {
-		Optional<Person> personToUpdateOptional = personRepository.findById(id);
-		if (!personToUpdateOptional.isPresent()) {
-			return ResponseEntity.notFound().build();
-		}
+    @PutMapping("/persons/{id}")
+    public ResponseEntity<Person> updatePerson(@PathVariable("id") Integer id, @RequestBody PersonDTO updatedPersonDTO) {
+        Optional<Person> personToUpdateOptional = personRepository.findById(id);
+        if (!personToUpdateOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        Person personToUpdate = personToUpdateOptional.get();
+        if (updatedPersonDTO.getPersonName() != null && !updatedPersonDTO.getPersonName().isEmpty()) {
+            personToUpdate.setPersonName(updatedPersonDTO.getPersonName());
+        }
 
-		Person personToUpdate = personToUpdateOptional.get();
-		if (updatedPersonDTO.getPersonName() != null && !updatedPersonDTO.getPersonName().isEmpty()) {
-			personToUpdate.setPersonName(updatedPersonDTO.getPersonName());
-		}
-
-		contactService.updateContacts(updatedPersonDTO.getContacts());
-
-		Person updatedPerson = personRepository.save(personToUpdate);
-		return ResponseEntity.ok().body(updatedPerson);
-	}
+        addressService.updateAddresses(personToUpdate.getAddresses(), updatedPersonDTO.getAddresses());
+        contactService.updateContacts(updatedPersonDTO.getContacts());
+        return ResponseEntity.ok().body(personRepository.save(personToUpdate));
+    }
 
 	@DeleteMapping("/persons/{id}")
 	public ResponseEntity<Person> deletePerson(@PathVariable("id") Integer id,

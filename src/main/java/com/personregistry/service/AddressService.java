@@ -34,12 +34,29 @@ public class AddressService {
         return addresses;
     }
 
+    public void updateAddresses(List<Address> addresses, List<AddressDTO> updatedAddresses) {
+        if (addresses != null && !addresses.isEmpty()) {
+            for (Address address : addresses) {
+                for (AddressDTO updatedAddress : updatedAddresses) {
+                    if (address.getAddressType().equals(updatedAddress.getAddressType()) && !isAddressTypeEmpty(updatedAddress.getAddressType())  
+                        && isValidAddressInfo(updatedAddress.getAddressInfo()) ) {
+                        address.setAddressInfo(updatedAddress.getAddressInfo());
+                    }
+                }
+            }
+        }
+    }
+    
     private boolean isValidAddressType(List<Address> addresses, AddressType addressType) {
-        return addressType != AddressType.EMPTY && !hasAddressType(addresses, addressType);
+        return !isAddressTypeEmpty(addressType) && !hasAddressType(addresses, addressType);
     }
 
     private boolean hasAddressType(List<Address> addresses, AddressType addressType) {
         return addresses.stream().anyMatch(address -> address.getAddressType() == addressType);
+    }
+
+    private boolean isAddressTypeEmpty(AddressType addressType) {
+        return addressType == AddressType.EMPTY;
     }
 
     private boolean isValidAddressInfo(String addressInfo) {
