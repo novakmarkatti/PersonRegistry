@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.personregistry.dto.ContactDTO;
+import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
 import com.personregistry.entities.Contact;
 import com.personregistry.entities.Person;
@@ -76,10 +79,31 @@ public class PersonRegistryController {
 		}
 		return personList;
 	}
-
+/* 
 	@PostMapping("/persons")
 	public Person addPerson(@RequestBody Person person) {
     	return this.personRepository.save(person);
+	}
+*/
+
+	@PostMapping("/persons")
+	public Person addPersonWithContacts(@RequestBody PersonDTO personDTO) {
+		Person person = new Person();
+		person.setPersonName(personDTO.getPersonName());
+		Person savedPerson = this.personRepository.save(person);
+
+		List<Contact> contacts = new ArrayList<>();
+		for (ContactDTO contactDTO : personDTO.getContacts()) {
+			Contact contact = new Contact();
+			contact.setContactType(contactDTO.getContactType());
+			contact.setContactInfo(contactDTO.getContactInfo());
+			contact.setPerson(savedPerson);
+			this.contactRepository.save(contact);
+			contacts.add(contact);
+		}
+
+		savedPerson.setContacts(contacts);
+		return this.personRepository.save(savedPerson);
 	}
 
 	@PutMapping("/persons/{id}")

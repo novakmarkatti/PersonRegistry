@@ -1,113 +1,142 @@
-  const handle500Error = (json) => {
-    if (json.status && json.status === 500) {
-      console.log(json.message);
-      throw new Error(json.message)
-    }
-    return json
+const handle500Error = (json) => {
+  if (json.status && json.status === 500) {
+      console.error(json.message);
+      throw new Error(json.message);
   }
+  return json;
+}
 
-  const renderError = (message) => {
-    alert(`Error calling Boots API: ${message}`);
-  }
+const renderError = (message) => {
+  alert(`Error calling Boots API: ${message}`);
+}
 
-  const fetchPersons = (cb) => {
-    fetch("/personregistry/persons")
+const fetchPersons = (cb) => {
+  fetch("/personregistry/persons")
       .then(res => res.json())
       .then(handle500Error)
-      .then(json => cb(json))
+      .then(cb)
       .catch(renderError);
+}
+
+const renderPersonsListCallback = (personsCardContainer) => (persons) => {
+  if (!Array.isArray(persons)) {
+      console.error('Invalid data format:', persons);
+      return;
   }
 
-  const renderPersonsListCallback = (personsTableBody) => (persons) => {
-    while (personsTableBody.firstChild) {
-      personsTableBody.removeChild(personsTableBody.firstChild);
-    }
-    persons.forEach((person) => {
-      const personsRow = document.createElement("tr");
-      personsRow.innerHTML = `
-        <td>${person.personId}</td>
-        <td>${person.personName}</td>
+  while (personsCardContainer.firstChild) {
+    personsCardContainer.removeChild(personsCardContainer.firstChild);
+  }
+
+  persons.forEach((person) => {
+      const personCard = document.createElement("div");
+      personCard.classList.add("person-card");
+
+      const personInfo = document.createElement("div");
+      personInfo.classList.add("person-info");
+      personInfo.innerHTML = `
+          <h3>${person.personName}</h3>
+          <p>&emsp;Person ID: ${person.personId}</p>
+          <p>&emsp;Contacts:</p>
       `;
-      personsTableBody.appendChild(personsRow);
-    });
-  }
-  
-  const addPerson = (cb) => {
-    const addPersonForm = document.getElementById("addPerson").elements;
-    const personName = addPersonForm["personNameToAdd"].value;
-    const person = { personName }
+      personCard.appendChild(personInfo);
 
-    fetch("/personregistry/persons", {
+      if (Array.isArray(person.contacts)) {
+          const contactsList = document.createElement("ul");
+          contactsList.classList.add("contacts-list");
+          person.contacts.forEach((contact) => {
+              const contactItem = document.createElement("li");
+              contactItem.innerHTML = `
+                  <p>&emsp;&emsp;${contact.contactType}: ${contact.contactInfo}</p>
+              `;
+              contactsList.appendChild(contactItem);
+          });
+
+          personCard.appendChild(contactsList);
+      } else {
+          console.error('Invalid contacts data format:', person.contacts);
+      }
+
+      personsCardContainer.appendChild(personCard);
+  });
+}
+
+
+
+const addPerson = () => {
+  const addPersonForm = document.getElementById("addPersonForm").elements;
+  const personName = addPersonForm["personName"].value;
+  const contactType = addPersonForm["contactType"].value;
+  const contactInfo = addPersonForm["contactInfo"].value;
+  
+  const person = { 
+      personName,
+      contacts: [{
+          contactType,
+          contactInfo
+      }]
+  };
+
+  fetch("/personregistry/persons", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(person)
-    })
-      .then(res => res.json())
-      .then(handle500Error)
-      .then(() => fetchPersons(cb))
-      .catch(renderError);
-  }
+  })
+  .then(handle500Error)
+  .then(() => fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer'))))
+  .catch(renderError);
+}
 
-  const updatePerson = (cb) => {
-    const updatePersonForm = document.getElementById("updatePerson").elements;
-    const personId = updatePersonForm["personIdToUpdate"].value;
-    const personName = updatePersonForm["personNameToUpdate"].value;
-    const person = { personId, personName }
+const updatePerson = () => {
+  const updatePersonForm = document.getElementById("updatePerson").elements;
+  const personId = updatePersonForm["personIdToUpdate"].value;
+  const personName = updatePersonForm["personNameToUpdate"].value;
+  const person = { personId, personName };
 
-    fetch(`/personregistry/persons/${personId}`, {
+  fetch(`/personregistry/persons/${personId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(person)
-    })
-      .then(res => res.json())
-      .then(handle500Error)
-      .then(() => fetchPersons(cb))
-      .catch(renderError);
-  }
+  })
+  .then(handle500Error)
+  .then(() => fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer'))))
+  .catch(renderError);
+}
 
-  const deletePersonById = (cb) => {
-    const deletePersonForm = document.getElementById("deletePerson").elements;
-    const personId = deletePersonForm["personIdToDelete"].value;
+const deletePersonById = () => {
+  const deletePersonForm = document.getElementById("deletePerson").elements;
+  const personId = deletePersonForm["personIdToDelete"].value;
 
-    fetch(`/personregistry/persons/${personId}`, {
+  fetch(`/personregistry/persons/${personId}`, {
       method: "DELETE"
-    })
-      .then(res => res.json())
-      .then(handle500Error)
-      .then(() => fetchPersons(cb))
-      .catch(renderError);
-  }
+  })
+  .then(handle500Error)
+  .then(() => fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer'))))
+  .catch(renderError);
+}
 
-  const searchPerson = (cb) => {
-    const searchPersonForm = document.getElementById("searchPerson").elements;
-    const personId = searchPersonForm["personIdToSearch"].value;
-    const personName = searchPersonForm["personNameToSearch"].value;
+const searchPerson = () => {
+  const searchPersonForm = document.getElementById("searchPerson").elements;
+  const personId = searchPersonForm["personIdToSearch"].value;
+  const personName = searchPersonForm["personNameToSearch"].value;
 
-    const queryParams = {};
-    if (personId) queryParams.personId = personId;
-    if (personName) queryParams.personName = personName;
-  
-    const queryString = Object.keys(queryParams)
+  const queryParams = {};
+  if (personId) queryParams.personId = personId;
+  if (personName) queryParams.personName = personName;
+
+  const queryString = Object.keys(queryParams)
       .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
       .join('&');
-  
-    fetch(`/personregistry/persons/search?${queryString}`)
-      .then(res => res.json())
-      .then(handle500Error)
-      .then((persons) => { cb(persons); })
-      .catch(renderError);
-  }
 
-  const listPersons = (cb) => {
-    fetch("/personregistry/persons")
-      .then(res => res.json())
-      .then(handle500Error)
-      .then(() => fetchPersons(cb))
-      .catch(renderError);
-  }
+  fetch(`/personregistry/persons/search?${queryString}`)
+  .then(res => res.json())
+  .then(handle500Error)
+  .then(renderPersonsListCallback(document.getElementById('personsCardContainer')))
+  .catch(renderError);
+}
 
-  fetchPersons(
-    renderPersonsListCallback(
-      document.getElementById("personsTableBody")
-    )
-  );
+const listPersons = () => {
+  fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer')));
+}
+
+listPersons();
