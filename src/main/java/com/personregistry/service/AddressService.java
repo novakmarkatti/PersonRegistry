@@ -21,34 +21,29 @@ public class AddressService {
         return this.addressRepository.findAll();
     }
 
-    public List<Address> setAddresses(Person person, PersonDTO personDTO) {
-        List<Address> addresses = new ArrayList<>();
-        List<Address> personsAddresses = person.getAddresses();
-        if (personsAddresses != null && !personsAddresses.isEmpty()) { // Existing person
-            for (AddressDTO addressDTO : personDTO.getAddresses()) {
-                if (addressDTO.getAddressType() != AddressType.EMPTY) {
-                    if (!hasAddressType(personsAddresses, addressDTO.getAddressType())) { // A person can only have 1 Address Type
-                        addresses.add(addAddressToRepository(addressDTO, person));
-                    }
-                }
-            }
-        } else { // New person
-            for (AddressDTO addressDTO : personDTO.getAddresses()) {
-                if (addressDTO.getAddressType() != AddressType.EMPTY) {
-                    addresses.add(addAddressToRepository(addressDTO, person));
-                }
+    public List<Address> addAddresses(Person person, PersonDTO personDTO) {
+        List<Address> addresses = person.getAddresses();
+        if (addresses == null) {
+            addresses = new ArrayList<>();
+        }
+        for (AddressDTO addressDTO : personDTO.getAddresses()) {
+            if (isValidAddressType(addresses, addressDTO.getAddressType()) && isValidAddressInfo(addressDTO.getAddressInfo())) {
+                addresses.add(addAddressToRepository(addressDTO, person));
             }
         }
         return addresses;
     }
 
+    private boolean isValidAddressType(List<Address> addresses, AddressType addressType) {
+        return addressType != AddressType.EMPTY && !hasAddressType(addresses, addressType);
+    }
+
     private boolean hasAddressType(List<Address> addresses, AddressType addressType) {
-        for (Address address : addresses) {
-            if (address.getAddressType() == addressType) {
-                return true;
-            }
-        }
-        return false;
+        return addresses.stream().anyMatch(address -> address.getAddressType() == addressType);
+    }
+
+    private boolean isValidAddressInfo(String addressInfo) {
+        return addressInfo != null && !addressInfo.isEmpty();
     }
 
     private Address addAddressToRepository(AddressDTO addressDTO, Person person) {
