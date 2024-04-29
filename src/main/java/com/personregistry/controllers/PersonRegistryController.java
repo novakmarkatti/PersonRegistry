@@ -142,22 +142,41 @@ public class PersonRegistryController {
 	}
 
 	@DeleteMapping("/persons/{id}")
-	public Person deletePerson(@PathVariable("id") Integer id) {
-      	Optional<Person> personToDeleteOptional = this.personRepository.findById(id);
-		if(!personToDeleteOptional.isPresent()) {
-			return null;
+	public ResponseEntity<Person> deletePerson(@PathVariable("id") Integer id,
+											   @RequestParam(value = "deletePersonData", required = false) boolean deletePersonData,
+											   @RequestParam(value = "deleteAllContacts", required = false) boolean deleteAllContacts,
+											   @RequestParam(value = "contactId", required = false) Integer contactId) {
+		Optional<Person> personToDeleteOptional = personRepository.findById(id);
+		if (!personToDeleteOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
 
-      	Person personToDelete = personToDeleteOptional.get();
-
-		List<Address> addressesToDelete = addressRepository.findAllByPersonPersonId(personToDelete.getPersonId());
-		addressRepository.deleteAll(addressesToDelete);
-
-		List<Contact> contactsToDelete = contactRepository.findAllByPersonPersonId(personToDelete.getPersonId());
-		contactRepository.deleteAll(contactsToDelete);
-
-		personRepository.delete(personToDelete);
-		return personToDelete;
+	    Person personToDelete = personToDeleteOptional.get();
+		if (deletePersonData) {
+			List<Contact> contactsToDelete = contactRepository.findAllByPersonPersonId(personToDelete.getPersonId());
+			contactRepository.deleteAll(contactsToDelete);
+	
+			personRepository.delete(personToDelete);
+			return ResponseEntity.ok().body(personToDelete);
+		}
+	
+		if (deleteAllContacts) {
+			List<Contact> contactsToDelete = contactRepository.findAllByPersonPersonId(personToDelete.getPersonId());
+			contactRepository.deleteAll(contactsToDelete);
+			return ResponseEntity.ok().body(personToDelete);
+		}
+	
+		if (contactId != null) {
+			Optional<Contact> contactOptional = contactRepository.findById(contactId);
+			if (contactOptional.isPresent()) {
+				Contact contactToDelete = contactOptional.get();
+				personToDelete.getContacts().remove(contactToDelete);
+				contactRepository.delete(contactToDelete);
+				return ResponseEntity.ok().body(personToDelete);
+			}
+		}
+	
+		return ResponseEntity.badRequest().build();
 	}
-
+	
 }

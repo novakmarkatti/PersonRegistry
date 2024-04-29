@@ -114,12 +114,25 @@ const updatePerson = () => {
   .catch(renderError);
 }
 
-const deletePersonById = () => {
-  const deletePersonForm = document.getElementById("deletePerson").elements;
-  const personId = deletePersonForm["personIdToDelete"].value;
+const deletePerson = () => {
+  const deletePersonForm = document.getElementById("deletePersonForm").elements;
+  const personId = deletePersonForm["personId"].value;
+  const deletePersonData = deletePersonForm["deletePersonData"].checked;
+  const deleteAllContacts = deletePersonForm["deleteAllContacts"].checked;
+  const deleteContactWithId = deletePersonForm["deleteContactWithId"].checked;
+  const contactId = deletePersonForm["contactId"].value;
 
-  fetch(`/personregistry/persons/${personId}`, {
-      method: "DELETE"
+  let url = `/personregistry/persons/${personId}`;
+  if (deletePersonData) {
+    url += "?deletePersonData=true";
+  } else if (deleteAllContacts) {
+    url += "?deleteAllContacts=true";
+  } else if (deleteContactWithId) {
+    url += `?contactId=${contactId}`;
+  }
+
+  fetch(url, {
+    method: "DELETE"
   })
   .then(handle500Error)
   .then(() => fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer'))))
