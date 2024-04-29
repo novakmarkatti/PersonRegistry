@@ -2,6 +2,8 @@ package com.personregistry.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.personregistry.enums.AddressType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -23,6 +25,7 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "person_id")
+    @JsonBackReference
     private Person person;
 
     @Enumerated(EnumType.STRING)

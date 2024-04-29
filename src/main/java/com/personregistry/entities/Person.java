@@ -24,6 +24,10 @@ public class Person {
 
   @OneToMany(mappedBy = "person")
   @JsonManagedReference
+  private List<Address> addresses;
+
+  @OneToMany(mappedBy = "person")
+  @JsonManagedReference
   private List<Contact> contacts;
 
 
@@ -43,12 +47,20 @@ public class Person {
     this.personName = personName;
   }
 
-	public List<Contact> getContacts() {
-		return contacts;
-	}
+  public List<Address> getAddresses() {
+    return addresses;
+  }
 
-	public void setContacts(List<Contact> contacts) {
-		this.contacts = contacts;
-	}
+  public void setAddresses(List<Address> addresses) {
+    this.addresses = addresses;
+  }
+
+  public List<Contact> getContacts() {
+    return contacts;
+  }
+
+  public void setContacts(List<Contact> contacts) {
+    this.contacts = contacts;
+  }
 
 }

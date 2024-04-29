@@ -37,11 +37,30 @@ const renderPersonsListCallback = (personsCardContainer) => (persons) => {
     personInfo.innerHTML = `
       <h3>${person.personName}</h3>
       <p><i>&emsp;Person ID: ${person.personId}</i></p>
-      <p><b>&emsp;Contacts:</b></p>
     `;
     personCard.appendChild(personInfo);
 
-    if (Array.isArray(person.contacts)) {
+    if (Array.isArray(person.addresses) && person.addresses.length > 0) {
+      const addressesSection = document.createElement("div");
+      addressesSection.classList.add("addresses-section");
+      addressesSection.innerHTML = "<p><b>&emsp;Addresses:</b></p>";
+      const addressesList = document.createElement("ul");
+      addressesList.classList.add("addresses-list");
+      person.addresses.forEach((address) => {
+        const addressItem = document.createElement("li");
+        addressItem.innerHTML = `
+          <p>&emsp;&emsp;<b>${address.addressType}:</b> ${address.addressInfo}</p>
+        `;
+        addressesList.appendChild(addressItem);
+      });
+      addressesSection.appendChild(addressesList);
+      personCard.appendChild(addressesSection);
+    }
+
+    if (Array.isArray(person.contacts) && person.contacts.length > 0) {
+      const contactsSection = document.createElement("div");
+      contactsSection.classList.add("contacts-section");
+      contactsSection.innerHTML = "<p><b>&emsp;Contacts:</b></p>";
       const contactsList = document.createElement("ul");
       contactsList.classList.add("contacts-list");
       person.contacts.forEach((contact) => {
@@ -52,10 +71,8 @@ const renderPersonsListCallback = (personsCardContainer) => (persons) => {
         `;
         contactsList.appendChild(contactItem);
       });
-
-      personCard.appendChild(contactsList);
-    } else {
-      console.error('Invalid contacts data format:', person.contacts);
+      contactsSection.appendChild(contactsList);
+      personCard.appendChild(contactsSection);
     }
 
     personsCardContainer.appendChild(personCard);
