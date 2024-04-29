@@ -9,35 +9,32 @@
     <div id="personsContainer" class="persons-container">
 
       <div id="personsList" class="persons-list">
-        <h2>Persons</h2>
-        <table class="persons-table">
-          <thead>
-            <tr>
-              <th>Person Id</th>
-              <th>Person Name</th>
-            </tr>
-          </thead>
-          <tbody id="personsTableBody"></tbody>
-        </table>
+        <h2>Person Registry</h2>
+        <div id="personsCardContainer"></div>
       </div>
       <hr />
 
       <div class="persons-form-container">
         <h2>Add Person</h2>
-        <form id="addPerson" class="persons-form" action="#">
+        <form id="addPersonForm" class="persons-form" action="#">
           <div class="person-form-entry">
-            <label for="personNameToAdd">Person Name</label>
-            <input type="text" id="personNameToAdd" name="personNameToAdd">
+            <label for="personName">Person Name</label>
+            <input type="text" id="personName" name="personName">
+            <br/><br/>
+            <label for="contactType">Contact Type</label>
+            <input type="text" id="contactType" name="contactType">
+            <br/><br/>
+            <label for="contactInfo">Contact Info</label>
+            <input type="text" id="contactInfo" name="contactInfo">
           </div>
           <br/>
-          <button type="button" id="addPersonSubmit" onclick="addPerson(renderPersonsListCallback(document.getElementById('personsTableBody')));">Add</button>
+          <button type="button" id="addPersonSubmit" onclick="addPerson();">Add</button>
         </form>
       </div>
       <hr />
 
       <div class="persons-form-container">
         <h2>Update Person</h2>
-        <div class="form-wrapper">
         <form id="updatePerson" class="persons-form" action="#">
           <div class="person-form-entry">
             <label for="personIdToUpdate">Person Id To Update</label>
@@ -47,9 +44,8 @@
             <input type="text" id="personNameToUpdate" name="personNameToUpdate">
           </div>
           <br/>
-          <button type="button" id="updatePersonSubmit" onclick="updatePerson(renderPersonsListCallback(document.getElementById('personsTableBody')));">Update</button>
+          <button type="button" id="updatePersonSubmit" onclick="updatePerson();">Update</button>
         </form>
-      </div>
       </div>
       <hr />
 
@@ -61,7 +57,7 @@
             <input type="text" id="personIdToDelete" name="personIdToDelete">
           </div>
           <br/>
-          <button type="button" id="deletePersonSubmit" onclick="deletePersonById(renderPersonsListCallback(document.getElementById('personsTableBody')));">Delete</button>
+          <button type="button" id="deletePersonSubmit" onclick="deletePersonById();">Delete</button>
         </form>
       </div>
 
@@ -76,9 +72,7 @@
             <input type="text" id="personNameToSearch" name="personNameToSearch">
           </div>
           <br/>
-          <button type="button" id="searchPersonSubmit" onclick="searchPerson(renderPersonsListCallback(document.getElementById('personsTableBody')));">Search</button>
-          <br/>
-          <button type="button" id="listPersonSubmit" onclick="listPersons(renderPersonsListCallback(document.getElementById('personsTableBody')));">Get Persons Table</button>
+          <button type="button" id="searchPersonSubmit" onclick="searchPerson();">Search</button>
         </form>
       </div>
       <hr />

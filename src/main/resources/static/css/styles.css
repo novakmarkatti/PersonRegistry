@@ -2,6 +2,25 @@
     font-family: 'Roboto', sans-serif;
   }
   
+  .person-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+
+  .person-card h3 {
+    margin-top: 0;
+  }
+
+  .person-card ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .person-card ul li {
+    margin-bottom: 5px;
+  }
+
   .persons-container {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     padding: 20px 20px;
