@@ -35,13 +35,22 @@
 
       <div class="persons-form-container">
         <h2>Update Person</h2>
-        <form id="updatePerson" class="persons-form" action="#">
+        <form id="updatePersonForm" class="persons-form" action="#">
           <div class="person-form-entry">
-            <label for="personIdToUpdate">Person Id To Update</label>
-            <input type="text" id="personIdToUpdate" name="personIdToUpdate">
+            <label for="personId">Update Person with the following Person ID:</label>
+            <input type="text" id="personId" name="personId">
             <br/><br/>
-            <label for="personNameToUpdate">Person Name</label>
-            <input type="text" id="personNameToUpdate" name="personNameToUpdate">
+            <label for="personName">New Person Name</label>
+            <input type="text" id="personName" name="personName">
+            <br/><br/>
+            <label for="contactId">Update Contact with the following Contact ID:</label>
+            <input type="text" id="contactId" name="contactId">
+            <br/><br/>
+            <label for="contactType">New Contact Type</label>
+            <input type="text" id="contactType" name="contactType">
+            <br/><br/>
+            <label for="contactInfo">New Contact Info</label>
+            <input type="text" id="contactInfo" name="contactInfo">
           </div>
           <br/>
           <button type="button" id="updatePersonSubmit" onclick="updatePerson();">Update</button>

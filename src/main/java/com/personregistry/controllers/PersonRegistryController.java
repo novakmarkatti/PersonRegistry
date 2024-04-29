@@ -2,12 +2,10 @@ package com.personregistry.controllers;
 
 import java.lang.Iterable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.personregistry.dto.ContactDTO;
 import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
@@ -19,7 +17,6 @@ import com.personregistry.repositories.ContactRepository;
 import com.personregistry.repositories.PersonRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,18 +76,18 @@ public class PersonRegistryController {
 		}
 		return personList;
 	}
-/* 
-	@PostMapping("/persons")
-	public Person addPerson(@RequestBody Person person) {
-    	return this.personRepository.save(person);
-	}
-*/
 
 	@PostMapping("/persons")
-	public Person addPersonWithContacts(@RequestBody PersonDTO personDTO) {
-		Person person = new Person();
-		person.setPersonName(personDTO.getPersonName());
-		Person savedPerson = this.personRepository.save(person);
+	public ResponseEntity<Person> addPersonWithContacts(@RequestBody PersonDTO personDTO) {
+		List<Person> existingPersons = personRepository.findByPersonName(personDTO.getPersonName());
+		Person savedPerson;
+		if (!existingPersons.isEmpty()) {
+			savedPerson = existingPersons.get(0);
+		} else {
+			Person person = new Person();
+			person.setPersonName(personDTO.getPersonName());
+			savedPerson = personRepository.save(person);
+		}
 
 		List<Contact> contacts = new ArrayList<>();
 		for (ContactDTO contactDTO : personDTO.getContacts()) {
@@ -98,29 +95,50 @@ public class PersonRegistryController {
 			contact.setContactType(contactDTO.getContactType());
 			contact.setContactInfo(contactDTO.getContactInfo());
 			contact.setPerson(savedPerson);
-			this.contactRepository.save(contact);
+			contactRepository.save(contact);
 			contacts.add(contact);
 		}
 
 		savedPerson.setContacts(contacts);
-		return this.personRepository.save(savedPerson);
+		return ResponseEntity.ok().body(personRepository.save(savedPerson));
 	}
 
 	@PutMapping("/persons/{id}")
-	public Person updatePerson(@PathVariable("id") Integer id, @RequestBody Person person) {
-      	Optional<Person> personToUpdateOptional = this.personRepository.findById(id);
-		if(!personToUpdateOptional.isPresent()) {
-			return null;
+	public ResponseEntity<Person> updatePerson(@PathVariable("id") Integer id, @RequestBody PersonDTO updatedPersonDTO) {
+		Optional<Person> personToUpdateOptional = personRepository.findById(id);
+		if (!personToUpdateOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
 
-      	Person personToUpdate = personToUpdateOptional.get();
+		Person personToUpdate = personToUpdateOptional.get();
+		if (updatedPersonDTO.getPersonName() != null && !updatedPersonDTO.getPersonName().isEmpty()) {
+			personToUpdate.setPersonName(updatedPersonDTO.getPersonName());
+		}
 
-		if(person.getPersonName() != null) {
-			personToUpdate.setPersonName(person.getPersonName());
+		List<ContactDTO> updatedContacts = updatedPersonDTO.getContacts();
+		if (updatedContacts != null && !updatedContacts.isEmpty()) {
+			for (ContactDTO updatedContact : updatedContacts) {
+				Integer contactId = updatedContact.getContactId();
+				String contactType = updatedContact.getContactType();
+				String contactInfo = updatedContact.getContactInfo();
+				if (contactId != null) {
+					Optional<Contact> contactOptional = contactRepository.findById(contactId);
+					if (contactOptional.isPresent()) {
+						Contact contactToUpdate = contactOptional.get();
+						if (contactType != null && !contactType.isEmpty()) {
+							contactToUpdate.setContactType(contactType);
+						}
+						if (contactInfo != null && !contactInfo.isEmpty()) {
+							contactToUpdate.setContactInfo(contactInfo);
+						}
+						contactRepository.save(contactToUpdate);
+					}
+				} 
+			}
 		}
 
 		Person updatedPerson = personRepository.save(personToUpdate);
-		return updatedPerson;
+		return ResponseEntity.ok().body(updatedPerson);
 	}
 
 	@DeleteMapping("/persons/{id}")
