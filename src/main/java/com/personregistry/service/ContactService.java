@@ -1,12 +1,14 @@
 package com.personregistry.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.personregistry.dto.ContactDTO;
 import com.personregistry.dto.PersonDTO;
+import com.personregistry.entities.Address;
 import com.personregistry.entities.Contact;
 import com.personregistry.entities.Person;
 import com.personregistry.repositories.ContactRepository;
@@ -58,10 +60,17 @@ public class ContactService {
         }
     }
 
-    public void deleteAllContact(Integer personId) {
-        contactRepository.deleteAll(contactRepository.findAllByPersonPersonId(personId));
+    public void deleteAllContact(List<Contact> contacts) {
+        if (contacts != null && !contacts.isEmpty()) {
+            Iterator<Contact> iterator = contacts.iterator();
+            while (iterator.hasNext()) {
+                Contact contact = iterator.next();
+                iterator.remove();
+                contactRepository.delete(contact);
+            }
+        }
     }
-
+    
     public void deleteContact(List<Contact> contacts, Integer contactId) {
         Optional<Contact> contactOptional = contactRepository.findById(contactId);
         contactOptional.ifPresent(contactToDelete -> {

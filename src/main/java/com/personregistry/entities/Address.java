@@ -2,7 +2,6 @@ package com.personregistry.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.personregistry.enums.AddressType;
 import jakarta.persistence.Column;

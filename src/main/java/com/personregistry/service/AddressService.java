@@ -1,12 +1,16 @@
 package com.personregistry.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.personregistry.dto.AddressDTO;
 import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
+import com.personregistry.entities.Contact;
 import com.personregistry.entities.Person;
 import com.personregistry.enums.AddressType;
 import com.personregistry.repositories.AddressRepository;
@@ -70,6 +74,31 @@ public class AddressService {
         address.setPerson(person);
         addressRepository.save(address);
         return address;
+    }
+
+    public void deleteAllAddress(List<Address> addresses) {
+        if (addresses != null && !addresses.isEmpty()) {
+            Iterator<Address> iterator = addresses.iterator();
+            while (iterator.hasNext()) {
+                Address address = iterator.next();
+                iterator.remove();
+                addressRepository.delete(address);
+            }
+        }
+    }
+
+    public void deleteAddress(List<Address> addresses, AddressType addressType) {
+        if (addresses != null && !addresses.isEmpty()) {
+            Address addressToDelete = addresses.stream()
+                    .filter(address -> address.getAddressType() == addressType)
+                    .findFirst()
+                    .orElse(null);
+    
+            if (addressToDelete != null) {
+                addresses.remove(addressToDelete);
+                addressRepository.delete(addressToDelete);
+            }
+        }
     }
 
 }

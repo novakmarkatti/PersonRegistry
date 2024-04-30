@@ -113,32 +113,40 @@ public class PersonRegistryController {
 	public ResponseEntity<Person> deletePerson(@PathVariable("id") Integer id,
 											   @RequestParam(value = "deletePersonData", required = false) boolean deletePersonData,
 											   @RequestParam(value = "deleteAllContacts", required = false) boolean deleteAllContacts,
-											   @RequestParam(value = "contactId", required = false) Integer contactId) {
+											   @RequestParam(value = "contactId", required = false) Integer contactId,
+											   @RequestParam(value = "addressType", required = false) AddressType addressType) {
 		Optional<Person> personToDeleteOptional = personRepository.findById(id);
 		if (!personToDeleteOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-
-	    Person personToDelete = personToDeleteOptional.get();
+	
+		Person personToDelete = personToDeleteOptional.get();
 		if (deletePersonData) {
-			contactService.deleteAllContact(personToDelete.getPersonId());
+    		addressService.deleteAllAddress(personToDelete.getAddresses());
+    		contactService.deleteAllContact(personToDelete.getContacts());
 			personRepository.delete(personToDelete);
 			return ResponseEntity.ok().body(personToDelete);
 		}
-	
+
+		int count = 0;
 		if (deleteAllContacts) {
-			contactService.deleteAllContact(personToDelete.getPersonId());
-			personRepository.save(personToDelete);
-			return ResponseEntity.ok().body(personToDelete);
-		}
-	
-		if (contactId != null) {
+			contactService.deleteAllContact(personToDelete.getContacts());
+			count++;
+		} else if (contactId != null) {
 			contactService.deleteContact(personToDelete.getContacts(), contactId);
+			count++;
+		}
+		if (addressType != null && addressType != AddressType.EMPTY) {
+			addressService.deleteAddress(personToDelete.getAddresses(), addressType);
+			count++;
+		}
+
+		if(count > 0) {
 			personRepository.save(personToDelete);
 			return ResponseEntity.ok().body(personToDelete);
+		} else {
+			return ResponseEntity.badRequest().build();
 		}
-	
-		return ResponseEntity.badRequest().build();
 	}
-	
+
 }

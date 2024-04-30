@@ -143,22 +143,32 @@ const updatePerson = () => {
   .catch(renderError);
 }
 
-
 const deletePerson = () => {
   const deletePersonForm = document.getElementById("deletePersonForm").elements;
   const personId = deletePersonForm["personId"].value;
   const deletePersonData = deletePersonForm["deletePersonData"].checked;
+  const addressType = deletePersonForm["addressType"].value;
   const deleteAllContacts = deletePersonForm["deleteAllContacts"].checked;
   const deleteContactWithId = deletePersonForm["deleteContactWithId"].checked;
   const contactId = deletePersonForm["contactId"].value;
 
   let url = `/personregistry/persons/${personId}`;
+  let params = new URLSearchParams();
+
   if (deletePersonData) {
-    url += "?deletePersonData=true";
-  } else if (deleteAllContacts) {
-    url += "?deleteAllContacts=true";
-  } else if (deleteContactWithId) {
-    url += `?contactId=${contactId}`;
+    params.append('deletePersonData', 'true');
+  } 
+  if (addressType) {
+    params.append('addressType', addressType);
+  } 
+  if (deleteAllContacts) {
+    params.append('deleteAllContacts', 'true');
+  }
+  if (deleteContactWithId) {
+    params.append('contactId', contactId);
+  }
+  if (params.toString() !== '') {
+    url += '?' + params.toString();
   }
 
   fetch(url, {
