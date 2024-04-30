@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.personregistry.dto.ContactDTO;
 import com.personregistry.dto.PersonDTO;
-import com.personregistry.entities.Address;
 import com.personregistry.entities.Contact;
 import com.personregistry.entities.Person;
 import com.personregistry.repositories.ContactRepository;

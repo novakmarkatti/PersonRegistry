@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.web.bind.annotation.RestController;
 import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
@@ -56,24 +58,6 @@ public class PersonRegistryController {
     @GetMapping("/persons")
 	public Iterable<Person> listPersons() {
 		return this.personRepository.findAll();
-	}
-
-	@GetMapping("/persons/search")
-	public List<Person> getPersons(@RequestParam(required = false) Integer personId, @RequestParam(required = false) String personName) {
-		List<Person> personList = new ArrayList<>();
-		if (personId != null && personName != null) {
-			return this.personRepository.findByPersonIdAndPersonName(personId, personName);
-		} else if (personId != null) {
-			Optional<Person> personOptional = this.personRepository.findById(personId);
-			if(!personOptional.isPresent()) {
-				return personList;
-			}
-			personList.add(personOptional.get());
-			return personList;
-		} else if (personName != null) {
-			return null; // this.personRepository.findByPersonName(personName);
-		}
-		return personList;
 	}
 
     @PostMapping("/persons")
@@ -149,4 +133,25 @@ public class PersonRegistryController {
 		}
 	}
 
+	@GetMapping("/persons/search")
+	public ResponseEntity<List<Person>> searchPersons(@RequestParam(required = false) Integer personId,
+													  @RequestParam(required = false) String personName,
+													  @RequestParam(value = "addressType", required = false) AddressType addressType,
+													  @RequestParam(required = false) String contactType,
+													  @RequestParam(required = false) String contactInfo) {
+		List<Person> personList = Collections.emptyList();
+		if (personId != null) {
+			Optional<Person> personOptional = personRepository.findById(personId);
+			personList = !personOptional.isPresent() ? Collections.emptyList() : Collections.singletonList(personOptional.get());
+		} else if (personName != null) {
+			Person person = personRepository.findByPersonName(personName);
+			personList = person != null ? Collections.singletonList(person) : Collections.emptyList();
+		} else if (addressType != null && addressType != AddressType.EMPTY) {
+			personList = personRepository.findByAddressesAddressType(addressType);
+		} else if (contactType != null || contactInfo != null) {
+			personList = personRepository.findByContactsContactTypeOrContactsContactInfo(contactType, contactInfo);
+		}
+		return personList.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(personList);
+	}
+	
 }

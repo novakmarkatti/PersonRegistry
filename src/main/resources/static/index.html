@@ -100,20 +100,30 @@
 
       <div class="persons-form-container">
         <h2>Search Person</h2>
-        <form id="searchPerson" class="persons-form" action="#">
+        <form id="searchPersonForm" class="persons-form" action="#">
           <div class="person-form-entry">
-            <label for="personIdToSearch">Person Id</label>
-            <input type="text" id="personIdToSearch" name="personIdToSearch">
+            <label for="personId">Person ID</label>
+            <input type="text" id="personId" name="personId">
             <br/><br/>
-            <label for="personNameToSearch">Person Name</label>
-            <input type="text" id="personNameToSearch" name="personNameToSearch">
+            <label for="personName">Person Name</label>
+            <input type="text" id="personName" name="personName">
+            <br/><br/>
+            <label for="addressType">Address Type</label>
+            <select class="addressType" name="addressType"></select>
+            <br/><br/>
+            <label for="contactType">Contact Type</label>
+            <input type="text" id="contactType" name="contactType">
+            <br/><br/>
+            <label for="contactInfo">Contact Info</label>
+            <input type="text" id="contactInfo" name="contactInfo">
           </div>
           <br/>
           <button type="button" id="searchPersonSubmit" onclick="searchPerson();">Search</button>
+          <br/>
+          <button type="button" id="getPersons" onclick="fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer')));">Get All Person</button>
         </form>
       </div>
-      <hr />
-
+      
     </div>
     <script type="text/javascript" src="js/personRegistryApi.js"></script>
   </body>

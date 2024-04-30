@@ -180,13 +180,19 @@ const deletePerson = () => {
 }
 
 const searchPerson = () => {
-  const searchPersonForm = document.getElementById("searchPerson").elements;
-  const personId = searchPersonForm["personIdToSearch"].value;
-  const personName = searchPersonForm["personNameToSearch"].value;
+  const searchPersonForm = document.getElementById("searchPersonForm").elements;
+  const personId = searchPersonForm["personId"].value;
+  const personName = searchPersonForm["personName"].value;
+  const addressType = searchPersonForm["addressType"].value;
+  const contactType = searchPersonForm["contactType"].value;
+  const contactInfo = searchPersonForm["contactInfo"].value;
 
   const queryParams = {};
   if (personId) queryParams.personId = personId;
   if (personName) queryParams.personName = personName;
+  if (addressType) queryParams.addressType = addressType;
+  if (contactType) queryParams.contactType = contactType;
+  if (contactInfo) queryParams.contactInfo = contactInfo;
 
   const queryString = Object.keys(queryParams)
       .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
@@ -197,10 +203,6 @@ const searchPerson = () => {
   .then(handle500Error)
   .then(renderPersonsListCallback(document.getElementById('personsCardContainer')))
   .catch(renderError);
-}
-
-const listPersons = () => {
-  fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer')));
 }
 
 const fetchAddressTypes = async () => {
@@ -233,4 +235,4 @@ const populateAddressTypes = async () => {
 };
 
 window.addEventListener('DOMContentLoaded', populateAddressTypes);
-listPersons();
+fetchPersons(renderPersonsListCallback(document.getElementById('personsCardContainer')));
