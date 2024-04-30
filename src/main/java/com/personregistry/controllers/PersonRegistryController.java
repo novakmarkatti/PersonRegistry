@@ -3,10 +3,8 @@ package com.personregistry.controllers;
 import java.lang.Iterable;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.springframework.web.bind.annotation.RestController;
 import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
