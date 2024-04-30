@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.personregistry.dto.PersonDTO;
 import com.personregistry.entities.Address;
 import com.personregistry.entities.Contact;

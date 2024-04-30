@@ -1,7 +1,13 @@
 package com.personregistry.dto;
 
 import com.personregistry.enums.AddressType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddressDTO {
 
     private AddressType addressType;

@@ -47,31 +47,6 @@ public class AddressService {
             }
         }
     }
-    
-    private boolean isValidAddressType(List<Address> addresses, AddressType addressType) {
-        return !isAddressTypeEmpty(addressType) && !hasAddressType(addresses, addressType);
-    }
-
-    private boolean hasAddressType(List<Address> addresses, AddressType addressType) {
-        return addresses.stream().anyMatch(address -> address.getAddressType() == addressType);
-    }
-
-    private boolean isAddressTypeEmpty(AddressType addressType) {
-        return addressType == AddressType.EMPTY;
-    }
-
-    private boolean isValidAddressInfo(String addressInfo) {
-        return addressInfo != null && !addressInfo.isEmpty();
-    }
-
-    private Address addAddressToRepository(AddressDTO addressDTO, Person person) {
-        Address address = new Address();
-        address.setAddressType(addressDTO.getAddressType());
-        address.setAddressInfo(addressDTO.getAddressInfo());
-        address.setPerson(person);
-        addressRepository.save(address);
-        return address;
-    }
 
     public void deleteAllAddress(List<Address> addresses) {
         if (addresses != null && !addresses.isEmpty()) {
@@ -96,6 +71,31 @@ public class AddressService {
                 addressRepository.delete(addressToDelete);
             }
         }
+    }
+
+    private boolean isValidAddressType(List<Address> addresses, AddressType addressType) {
+        return !isAddressTypeEmpty(addressType) && !hasAddressType(addresses, addressType);
+    }
+
+    private boolean hasAddressType(List<Address> addresses, AddressType addressType) {
+        return addresses.stream().anyMatch(address -> address.getAddressType() == addressType);
+    }
+
+    private boolean isAddressTypeEmpty(AddressType addressType) {
+        return addressType == AddressType.EMPTY;
+    }
+
+    private boolean isValidAddressInfo(String addressInfo) {
+        return addressInfo != null && !addressInfo.isEmpty();
+    }
+
+    private Address addAddressToRepository(AddressDTO addressDTO, Person person) {
+        Address address = new Address();
+        address.setAddressType(addressDTO.getAddressType());
+        address.setAddressInfo(addressDTO.getAddressInfo());
+        address.setPerson(person);
+        addressRepository.save(address);
+        return address;
     }
 
 }
